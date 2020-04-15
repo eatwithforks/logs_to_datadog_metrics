@@ -1,0 +1,8 @@
+---
+patterns:
+- pattern: 'this is bad'
+  metric: 'foo.bad'
+  tags: ['tag:bad']
+- pattern: 'this is good'
+  metric: 'foo.good'
+  tags: ['tag:good']
