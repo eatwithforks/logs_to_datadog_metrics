@@ -6,3 +6,5 @@ patterns:
 - pattern: 'this is good'
   metric: 'foo.good'
   tags: ['tag:good']
+- pattern: 'this is untagged'
+  metric: 'foo.untagged'

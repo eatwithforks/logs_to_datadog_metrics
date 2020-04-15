@@ -8,13 +8,24 @@ def sh(command)
   result
 end
 
+sh("go build .")
+
 describe "metrics" do
+  def listen
+    UDPSocket.open do |u1|
+      u1.bind("localhost", 1234)
+      ENV['STATSD_HOST'] = "localhost"
+      ENV['STATSD_PORT'] = '1234'
+      yield
+      u1.recvfrom(1000).first
+    end
+  end
+
   it "sends to datadog" do
-    sh("go build .")
-    u1 = UDPSocket.new
-    port = 1234
-    u1.bind("localhost", port)
-    sh("echo 'this is bad' | STATSD_HOST='localhost' STATSD_PORT=#{port} ./logs_to_datadog_metrics")
-    u1.recvfrom(1000).first.must_equal "foo.bad:1|c|#tag:bad"
+    listen { sh("echo 'this is bad' | ./logs_to_datadog_metrics") }.must_equal "foo.bad:1|c|#tag:bad"
+  end
+
+  it "does not need tags" do
+    listen { sh("echo 'this is untagged' | ./logs_to_datadog_metrics") }.must_equal "foo.untagged:1|c"
   end
 end
