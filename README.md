@@ -2,10 +2,32 @@
 Parse process logs for patterns and send metrics to Datadog 
 
 Lots of programs generate logs but do not generate metrics. This is a simple program that reads from stdin, matches a pattern of your choice, and sends metrics to Datadog.
- 
+ ### Installation
+ via curl:
  ```bash
-go get github.com/eatwithforks/logs_to_datadog_metrics 
-echo "this is bad" | STATSD_HOST="localhost" STATSD_PORT=8125 logs_to_datadog_metrics -pattern="this is .*" -metric="foo.this_is"
+curl -sfL <PICK URL FROM RELEASES PAGE> | \
+tar -zx && \
+chmod +x logs_to_datadog_metrics
+```
+ 
+ via go:
+  ```bash
+ go get github.com/eatwithforks/logs_to_datadog_metrics
+ ```
+ 
+ ### Setup
+Create a config yaml file with specified patterns.
+
+```
+patterns:
+- pattern: 'this is bad'
+  metric: 'foo.bad'
+  tags: ['foo:bar']
+```
+
+To use:
+```
+execute <your-program-here> | STATSD_HOST="localhost" STATSD_PORT=8125 logs_to_datadog_metrics -config_path /path/to/config/file"
 ```
 
 Note: if important stuff comes out on stderr, you need to add `2>&1` before the pipe.
